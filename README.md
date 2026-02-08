@@ -1,6 +1,6 @@
 # Mac Organizer
 
-A background utility for macOS that automatically keeps your `~/Downloads` folder organized.
+A background utility for macOS that automatically keeps your `~/Downloads` folder organized or any other folder you want to organize just add it in the config.json file
 
 ## 1. What is this tool?
 
@@ -65,7 +65,7 @@ The tool is designed to run in a Python virtual environment to avoid messaging u
 **Installation Steps:**
 1.  Clone the repository and enter the directory:
     ```bash
-    git clone [https://github.com/yourusername/mac-organizer.git](https://github.com/allen-turing/mac-organizer.git)
+    git clone https://github.com/allen-turing/mac-organizer.git
     cd mac-organizer
     ```
 2.  Run the installation script:
