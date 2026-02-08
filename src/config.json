@@ -1,4 +1,8 @@
 {
+    "archive": {
+        "enabled": true,
+        "days": 5
+    },
     "Images": [
         "jpg",
         "jpeg",

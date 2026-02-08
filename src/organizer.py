@@ -144,6 +144,73 @@ if __name__ == "__main__":
              event_handler.process_file(filepath, wait_for_write=False)
     logging.info("Finished scanning existing files.")
 
+    # Periodic Archival
+    if config.get("archive", {}).get("enabled", False):
+        days = config["archive"].get("days", 5)
+        logging.info(f"Archival enabled: checking for files older than {days} days every 24 hours.")
+        
+        import threading
+
+        def run_archival():
+            logging.info("Starting archival process...")
+            threshold_seconds = days * 86400
+            current_time = time.time()
+
+            # Iterate over subdirectories in Downloads
+            for item in os.listdir(DOWNLOADS_DIR):
+                item_path = os.path.join(DOWNLOADS_DIR, item)
+                
+                # Only look inside directories (e.g. Images, Documents)
+                if os.path.isdir(item_path) and not item.startswith('.'):
+                    
+                    # Walk through all subdirectories recursively
+                    for root, dirs, files in os.walk(item_path):
+                        archive_path = os.path.join(root, "archive.zip")
+                        files_to_archive = []
+
+                        # Find candidates in the current 'root' folder
+                        for filename in files:
+                            filepath = os.path.join(root, filename)
+                            # Skip archive.zip itself and hidden files
+                            if filename == "archive.zip" or filename.startswith('.'):
+                                continue
+                            
+                            if os.path.isfile(filepath):
+                                try:
+                                    file_atime = os.path.getatime(filepath)
+                                    if (current_time - file_atime) > threshold_seconds:
+                                        files_to_archive.append(filename)
+                                except OSError:
+                                    continue # Skip files if there's an error accessing attributes
+                        
+                        if files_to_archive:
+                            logging.info(f"Archiving {len(files_to_archive)} files in {root}...")
+                            import zipfile
+                            try:
+                                # Append to zip
+                                with zipfile.ZipFile(archive_path, 'a', zipfile.ZIP_DEFLATED) as zipf:
+                                    for file in files_to_archive:
+                                        file_path = os.path.join(root, file)
+                                        # Write file to zip with just the filename (no path structure inside zip)
+                                        zipf.write(file_path, file)
+                                        logging.info(f"Archived {file}")
+                                
+                                # Delete original files
+                                for file in files_to_archive:
+                                    file_path = os.path.join(root, file)
+                                    os.remove(file_path)
+                                    logging.info(f"Deleted original {file}")
+                                    
+                            except Exception as e:
+                                logging.error(f"Failed to archive in {root}: {e}")
+
+            logging.info("Archival process finished.")
+            # Schedule next run in 24 hours
+            threading.Timer(86400, run_archival).start()
+
+        # Run immediately on startup (in a separate thread to not block observer)
+        threading.Thread(target=run_archival).start()
+
     try:
         while True:
             time.sleep(1)

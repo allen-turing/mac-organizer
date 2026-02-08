@@ -8,6 +8,7 @@ A background utility for macOS that automatically keeps your `~/Downloads` folde
 
 *   **Categorizes Files**: Automatically moves files into subfolders (e.g., `Images`, `Documents`, `Archives`) based on their file extensions.
 *   **Cleans Up Duplicates**: Detects if you download the same file twice (even with a different name) and deletes the duplicate to save space.
+*   **Smart Archival**: Automatically zips old files (default: older than 5 days) into an `archive.zip` **inside each folder**. It works recursively, so even subfolders get their own tidy `archive.zip`.
 *   **Startup Scan**: When you log in or start the service, it instantly organizes any existing files in the folder.
 
 ## 2. How the Code Works
@@ -31,10 +32,15 @@ We use the python `watchdog` library to listen for file system events. Instead o
 This file maps folder names to file extensions. You can customize it:
 ```json
 {
+  "archive": {
+    "enabled": true,
+    "days": 5
+  },
   "Images": ["jpg", "png", "gif"],
   "Documents": ["pdf", "docx", "txt"]
 }
 ```
+*   **archive**: Set `enabled` to `true` to turn on auto-archiving. `days` sets the age threshold (files older than this are moved to `archive.zip`).
 
 ### Background Service (`com.user.macorganizer.plist`)
 This is a standard macOS **Launch Agent** file. It tells macOS to:
