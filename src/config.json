@@ -3,7 +3,7 @@
         "~/Downloads"
     ],
     "archive": {
-        "enabled": true,
+        "enabled": false,
         "days": 5
     },
     "Images": [
