@@ -32,10 +32,14 @@ We use the python `watchdog` library to listen for file system events. Instead o
 *   **Startup Logic**: At the bottom of the script, before starting the observer loop, we iterate through all existing files in `Downloads` to organize them immediately.
 
 ### Configuration (`src/config.json`)
-This file maps folder names to file extensions. You can customize it:
+You can specify **one or multiple** folders to organize:
 ```json
 {
-  "target_directory": "~/Downloads",
+  "target_directories": [
+    "~/Downloads",
+    "~/Desktop/Screenshots",
+    "~/Documents/Unsorted"
+  ],
   "archive": {
     "enabled": true,
     "days": 5
