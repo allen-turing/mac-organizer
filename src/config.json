@@ -1,4 +1,5 @@
 {
+    "target_directory": "~/Downloads",
     "archive": {
         "enabled": true,
         "days": 5

@@ -35,6 +35,7 @@ We use the python `watchdog` library to listen for file system events. Instead o
 This file maps folder names to file extensions. You can customize it:
 ```json
 {
+  "target_directory": "~/Downloads",
   "archive": {
     "enabled": true,
     "days": 5

@@ -8,7 +8,6 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 # Configuration
-DOWNLOADS_DIR = os.path.expanduser("~/Downloads")
 CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
 LOG_FILE = os.path.expanduser("~/Library/Logs/mac-organizer.log")
 
@@ -57,8 +56,9 @@ def get_unique_filename(dest_folder, filename):
     return new_filename
 
 class OrganizerHandler(FileSystemEventHandler):
-    def __init__(self, config):
+    def __init__(self, config, target_directory):
         self.config = config
+        self.target_directory = target_directory
 
     def on_created(self, event):
         if not event.is_directory:
@@ -69,8 +69,9 @@ class OrganizerHandler(FileSystemEventHandler):
             self.process_file(event.dest_path)
 
     def process_file(self, filepath, wait_for_write=True):
-        # Only process files directly in the Downloads folder
-        if os.path.dirname(filepath) != DOWNLOADS_DIR:
+        # Only process files directly in the Target folder
+        # Helper to check if file is directly in target_directory
+        if os.path.dirname(filepath) != self.target_directory:
             return
 
         # Ignore hidden files and temporary download files
@@ -94,7 +95,7 @@ class OrganizerHandler(FileSystemEventHandler):
             extension = filename.split('.')[-1] if '.' in filename else ''
             category = get_category(extension, self.config)
             
-            dest_folder = os.path.join(DOWNLOADS_DIR, category)
+            dest_folder = os.path.join(self.target_directory, category)
             if not os.path.exists(dest_folder):
                 os.makedirs(dest_folder)
 
@@ -130,16 +131,32 @@ class OrganizerHandler(FileSystemEventHandler):
 
 if __name__ == "__main__":
     config = load_config()
-    event_handler = OrganizerHandler(config)
+    target_dir = os.path.expanduser(config.get("target_directory", "~/Downloads"))
+    
+    if not os.path.exists(target_dir):
+        logging.error(f"Target directory {target_dir} does not exist.")
+        exit(1)
+
+    event_handler = OrganizerHandler(config, target_dir)
     observer = Observer()
-    observer.schedule(event_handler, DOWNLOADS_DIR, recursive=False)
+    observer.schedule(event_handler, target_dir, recursive=True) # Recursive=True needed for on_moved in subfolders? No, we filter dirname. 
+    # Actually if we want to support recursive archival we might need to watch recursively?
+    # But for organization we only organize TOP LEVEL files.
+    # The archival logic iterates separately. 
+    # Let's keep recursive=False for the main organizer as per requirement "only cleans the top level".
+    # But wait, we enabled RECURSIVE ARCHIVAL. That runs in a separate thread.
+    # The observer is for NEW files. If I add a file to a subfolder, do I want it organized?
+    # User asked "if it is checking inside a directory... will it also check on those 4 folders?" -> I said NO for organization.
+    # User asked for recursive ARCHIVAL. 
+    # So organization remains top-level only.
+    observer.schedule(event_handler, target_dir, recursive=False)
     observer.start()
-    logging.info(f"Started organizing {DOWNLOADS_DIR}")
+    logging.info(f"Started organizing {target_dir}")
     
     # Organize existing files on startup
     logging.info("Scanning existing files...")
-    for filename in os.listdir(DOWNLOADS_DIR):
-        filepath = os.path.join(DOWNLOADS_DIR, filename)
+    for filename in os.listdir(target_dir):
+        filepath = os.path.join(target_dir, filename)
         if os.path.isfile(filepath):
              event_handler.process_file(filepath, wait_for_write=False)
     logging.info("Finished scanning existing files.")
@@ -156,9 +173,9 @@ if __name__ == "__main__":
             threshold_seconds = days * 86400
             current_time = time.time()
 
-            # Iterate over subdirectories in Downloads
-            for item in os.listdir(DOWNLOADS_DIR):
-                item_path = os.path.join(DOWNLOADS_DIR, item)
+            # Iterate over subdirectories in Target Directory
+            for item in os.listdir(target_dir):
+                item_path = os.path.join(target_dir, item)
                 
                 # Only look inside directories (e.g. Images, Documents)
                 if os.path.isdir(item_path) and not item.startswith('.'):
