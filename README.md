@@ -49,24 +49,26 @@ The tool is designed to run in a Python virtual environment to avoid messaging u
 **Prerequisites:** Python 3 installed.
 
 **Installation Steps:**
-1.  Navigate to the project directory:
+1.  Clone the repository and enter the directory:
     ```bash
-    cd /Users/pratyush/Projects/Tools/mac-organizer
+    git clone https://github.com/yourusername/mac-organizer.git
+    cd mac-organizer
     ```
-2.  Create a virtual environment:
+2.  Run the installation script:
     ```bash
-    python3 -m venv venv
-    source venv/bin/activate
+    chmod +x install.sh
+    ./install.sh
     ```
-3.  Install dependencies:
-    ```bash
-    pip install watchdog
-    ```
-4.  install the background service:
-    ```bash
-    cp com.user.macorganizer.plist ~/Library/LaunchAgents/
-    launchctl load ~/Library/LaunchAgents/com.user.macorganizer.plist
-    ```
+    This script will automatically:
+    *   Create a virtual environment.
+    *   Install dependencies (`watchdog`).
+    *   Configure and start the background service.
+
+**Uninstallation:**
+To remove the tool and stop the service:
+```bash
+./uninstall.sh
+```
 
 ## 4. Managing the Organization
 
