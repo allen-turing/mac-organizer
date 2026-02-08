@@ -65,7 +65,7 @@ The tool is designed to run in a Python virtual environment to avoid messaging u
 **Installation Steps:**
 1.  Clone the repository and enter the directory:
     ```bash
-    git clone https://github.com/yourusername/mac-organizer.git
+    git clone [https://github.com/yourusername/mac-organizer.git](https://github.com/allen-turing/mac-organizer.git)
     cd mac-organizer
     ```
 2.  Run the installation script:
