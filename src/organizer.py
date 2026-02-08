@@ -177,8 +177,8 @@ if __name__ == "__main__":
                             
                             if os.path.isfile(filepath):
                                 try:
-                                    file_atime = os.path.getatime(filepath)
-                                    if (current_time - file_atime) > threshold_seconds:
+                                    file_mtime = os.path.getmtime(filepath)
+                                    if (current_time - file_mtime) > threshold_seconds:
                                         files_to_archive.append(filename)
                                 except OSError:
                                     continue # Skip files if there's an error accessing attributes

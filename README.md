@@ -8,7 +8,10 @@ A background utility for macOS that automatically keeps your `~/Downloads` folde
 
 *   **Categorizes Files**: Automatically moves files into subfolders (e.g., `Images`, `Documents`, `Archives`) based on their file extensions.
 *   **Cleans Up Duplicates**: Detects if you download the same file twice (even with a different name) and deletes the duplicate to save space.
-*   **Smart Archival**: Automatically zips old files (default: older than 5 days) into an `archive.zip` **inside each folder**. It works recursively, so even subfolders get their own tidy `archive.zip`.
+*   **Smart Archival**:
+    **How it works:**
+    1.  **Monitors Age:** It checks the "**Date Modified**" of files.
+    2.  **Auto-Archive:** If a file hasn't been modified for **5 days**, it moves it into `archive.zip`. It works recursively, so even subfolders get their own tidy `archive.zip`.
 *   **Startup Scan**: When you log in or start the service, it instantly organizes any existing files in the folder.
 
 ## 2. How the Code Works
