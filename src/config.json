@@ -1,0 +1,83 @@
+{
+    "Images": [
+        "jpg",
+        "jpeg",
+        "png",
+        "gif",
+        "bmp",
+        "svg",
+        "webp",
+        "tiff",
+        "ico"
+    ],
+    "Documents": [
+        "pdf",
+        "doc",
+        "docx",
+        "xls",
+        "xlsx",
+        "ppt",
+        "pptx",
+        "txt",
+        "csv",
+        "rtf",
+        "odt",
+        "md",
+        "json",
+        "xml",
+        "yaml",
+        "yml"
+    ],
+    "Audio": [
+        "mp3",
+        "wav",
+        "aac",
+        "flac",
+        "ogg",
+        "m4a"
+    ],
+    "Video": [
+        "mp4",
+        "mov",
+        "avi",
+        "mkv",
+        "flv",
+        "wmv",
+        "webm"
+    ],
+    "Archives": [
+        "zip",
+        "rar",
+        "7z",
+        "tar",
+        "gz",
+        "pkg",
+        "dmg",
+        "iso"
+    ],
+    "Executables": [
+        "exe",
+        "msi",
+        "bat",
+        "sh",
+        "app"
+    ],
+    "Code": [
+        "py",
+        "js",
+        "html",
+        "css",
+        "java",
+        "cpp",
+        "c",
+        "h",
+        "cs",
+        "php",
+        "rb",
+        "go",
+        "swift",
+        "kt",
+        "ts",
+        "sql"
+    ]
+}

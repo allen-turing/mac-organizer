@@ -1,0 +1,79 @@
+# Mac Organizer
+
+A background utility for macOS that automatically keeps your `~/Downloads` folder organized.
+
+## 1. What is this tool?
+
+**Mac Organizer** is a lightweight Python script that runs silently in the background. It monitors your Downloads folder in real-time and:
+
+*   **Categorizes Files**: Automatically moves files into subfolders (e.g., `Images`, `Documents`, `Archives`) based on their file extensions.
+*   **Cleans Up Duplicates**: Detects if you download the same file twice (even with a different name) and deletes the duplicate to save space.
+*   **Startup Scan**: When you log in or start the service, it instantly organizes any existing files in the folder.
+
+## 2. How the Code Works
+
+The project relies on a few key components:
+
+### The Core: `watchdog` Library
+We use the python `watchdog` library to listen for file system events. Instead of constantly checking the folder (polling), which wastes resources, `watchdog` asks the OS to notify our script only when a file is created or moved.
+
+### Code Walkthrough (`src/organizer.py`)
+
+*   **`OrganizerHandler` Class**: This is the heart of the script. It inherits from `FileSystemEventHandler`.
+    *   `on_created` & `on_moved`: These methods are triggered by the OS. We filter out temporary files (like `.crdownload` from Chrome) and then call `process_file`.
+*   **`process_file(filepath)`**:
+    1.  **Checks Extension**: Reads `src/config.json` to decide where the file goes.
+    2.  **Duplicate Check**: Before moving, it checks the destination folder. It compares **File Size** and **SHA256 Hash** (digital fingerprint) to ensure files are truly identical. If it's a duplicate, it deletes the new file.
+    3.  **Move**: If unique, it uses `shutil.move` to place the file in its category folder.
+*   **Startup Logic**: At the bottom of the script, before starting the observer loop, we iterate through all existing files in `Downloads` to organize them immediately.
+
+### Configuration (`src/config.json`)
+This file maps folder names to file extensions. You can customize it:
+```json
+{
+  "Images": ["jpg", "png", "gif"],
+  "Documents": ["pdf", "docx", "txt"]
+}
+```
+
+### Background Service (`com.user.macorganizer.plist`)
+This is a standard macOS **Launch Agent** file. It tells macOS to:
+*   Start our python script automatically when you log in.
+*   Restart it if it crashes (`KeepAlive`).
+*   Save logs to `~/Library/Logs/mac-organizer.log`.
+
+## 3. Setup & Installation
+
+The tool is designed to run in a Python virtual environment to avoid messaging up your system python.
+
+**Prerequisites:** Python 3 installed.
+
+**Installation Steps:**
+1.  Navigate to the project directory:
+    ```bash
+    cd /Users/pratyush/Projects/Tools/mac-organizer
+    ```
+2.  Create a virtual environment:
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+3.  Install dependencies:
+    ```bash
+    pip install watchdog
+    ```
+4.  install the background service:
+    ```bash
+    cp com.user.macorganizer.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/com.user.macorganizer.plist
+    ```
+
+## 4. Managing the Organization
+
+You don't need to do anything! Just download files.
+
+**Control Commands:**
+*   **Check Setup**: `launchctl list | grep macorganizer`
+*   **Stop**: `launchctl unload ~/Library/LaunchAgents/com.user.macorganizer.plist`
+*   **Start**: `launchctl load ~/Library/LaunchAgents/com.user.macorganizer.plist`
+*   **View Logs**: `tail -f ~/Library/Logs/mac-organizer.log`
