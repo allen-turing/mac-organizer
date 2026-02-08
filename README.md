@@ -93,3 +93,14 @@ You don't need to do anything! Just download files.
 *   **Stop**: `launchctl unload ~/Library/LaunchAgents/com.user.macorganizer.plist`
 *   **Start**: `launchctl load ~/Library/LaunchAgents/com.user.macorganizer.plist`
 *   **View Logs**: `tail -f ~/Library/Logs/mac-organizer.log`
+
+## 5. Development & Updates
+
+If you change `config.json` or modify the Python code:
+
+1.  Make your changes.
+2.  Run the reload script to apply them:
+    ```bash
+    ./reload.sh
+    ```
+
